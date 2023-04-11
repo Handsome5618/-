@@ -1,0 +1,12 @@
+#include "stm32f10x.h"                  // Device header
+
+void MG996r_Angle(u16 angle)
+{
+	TIM_SetCompare3(TIM4,angle);
+}
+
+//void MG996r_Angle(u16 angle)
+//{
+//	TIM_SetCompare4(TIM4,angle);
+//}
+

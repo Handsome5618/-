@@ -1,0 +1,137 @@
+#include "stm32f10x.h"                  // Device header
+#include "Delay.h"
+#include <stdarg.h>
+#include "pwm.h"
+#include "MG996r.h"
+#include "usart3.h"
+#include "each.h"
+
+#define PassLen 4
+
+u8 BoxId = 0;
+u8 flat = 0;
+u8 num;
+u8 Date[4] = {0};
+u8 Box1_PassWord[PassLen] = {0};
+u8 Box2_PassWord[PassLen] = {0};
+
+void Box_Init(void);
+void Set_Box1_PassWord(u8 i);
+
+struct BOX
+{
+    u8 BoxId;
+    u8 BoxIdFlat;
+    u8 PassFlag;
+    u8 PassWord[6];
+    u8 BoxFunction;
+} Box[5];
+
+int main(void)
+{
+    delay_init();
+    USART3_Config();
+    TIM4_PWM_Init(59999,24);
+    Box_Init();
+    while(1)
+    {
+        while(flat == 0)
+        {
+            continue;
+        }
+        flat = 0;
+        delay_ms(10);
+        PC_SendString((u8*)"\n\n连接成功\n");
+        PC_SendString((u8*)"欢迎使用“临存”智能寄存终端\n");
+        PC_SendString((u8*)"请选择锁\n\n");
+        while(flat == 0)
+        {
+            continue;
+        }
+        flat = 0;
+        delay_ms(10);
+        BoxId = num;
+		Box[1].BoxIdFlat = 1;
+        if(Box[1].BoxId == BoxId)
+        {
+            PC_SendString((u8*)"\n\n请选择功能：\n存/取\n\n");
+            while(flat == 0)
+            {
+                continue;
+            }
+            flat = 0;
+            delay_ms(10);
+        }
+        if(Box[1].BoxId == 1 && Box[1].BoxIdFlat == 1 && Box[1].PassFlag == 0)
+        {
+            PC_SendString((u8*)"\n\n    锁一    \n");
+            PC_SendString((u8*)"请设置您的密码\n\n");
+            while(flat == 0)
+            {
+                continue;
+            }
+            flat = 0;
+            delay_ms(10);
+            while(flat == 0)
+            {
+                continue;
+            }
+            flat = 0;
+            delay_ms(10);
+            Set_Box1_PassWord(Box[1].BoxId);
+            PC_SendString((u8*)"\n\n密码设置成功\n\n");
+            Box[1].PassFlag = 1;
+            Box1_Open();
+            PC_SendString((u8*)"\n\n锁已打开，请存放您的物品\n");
+            PC_SendString((u8*)"按确认键结束\n\n");
+            while(flat == 0)
+            {
+                continue;
+            }
+            flat = 0;
+            delay_ms(10);
+            Box1_Close();
+            PC_SendString((u8*)"\n\n您的物品已储存妥当\n");
+            PC_SendString((u8*)"锁已关闭\n\n");
+			Box[1].BoxIdFlat = 0;
+        }
+		if(Box[1].BoxId == 1 && Box[1].BoxIdFlat == 1 && Box[1].PassFlag == 1)
+{
+	
+}
+	}
+}
+
+
+void Set_Box1_PassWord(u8 i)		//设置密码
+{
+    Box[i].PassWord[0] = Box1_PassWord[0];
+    Box[i].PassWord[1] = Box1_PassWord[1];
+    Box[i].PassWord[2] = Box1_PassWord[2];
+}
+
+void Box_Init()
+{
+    Box[1].BoxId = 1;
+    Box[1].BoxIdFlat = 0;
+    Box[1].PassFlag = 0;
+    Box[1].PassWord[0] = 0;
+    Box[1].PassWord[1] = 0;
+    Box[1].PassWord[2] = 0;
+    Box[1].PassWord[3] = 0;
+    Box[1].PassWord[4] = 0;
+    Box[1].PassWord[5] = 0;
+    Box[1].BoxFunction = 0;
+
+    Box[2].BoxId = 2;
+    Box[1].BoxIdFlat = 0;
+    Box[2].PassFlag = 0;
+    Box[2].PassWord[0] = 0;
+    Box[2].PassWord[1] = 0;
+    Box[2].PassWord[2] = 0;
+    Box[2].PassWord[3] = 0;
+    Box[2].PassWord[4] = 0;
+    Box[2].PassWord[5] = 0;
+    Box[2].BoxFunction = 0;
+}
+
